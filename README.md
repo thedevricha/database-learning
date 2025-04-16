@@ -7,12 +7,12 @@ A **Database** s a collection of data stored in a formate that can easily be acc
 ## What is DBMS?
 For manage databases we can use software application called **Database Management System**
 
-## Types of DBMS:
-1) Relational: Store data into tables which are linked to each other.
-=> **SQL (Structured Query Language)** is used for work with RDBMS.
-=> Example: MySQL, SQL Server, Oracle
+## Types of Databases:
+1) Relational: Store data into tables which are linked to each other.  
+=> **SQL (Structured Query Language)** is used for work with RDBMS.  
+=> Example: MySQL, SQL Server, Oracle, PostgreSQL, MariaDB, SQLite  
 2) NoSQL:
-=> NoSQL system don't understand SQL.
+=> NoSQL system don't understand SQL.  
 
 
 ## Why Learn SQL?
