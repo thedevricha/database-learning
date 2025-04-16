@@ -70,3 +70,69 @@ SELECT first_name FROM `employee` UNION SELECT branch_name FROM branch;
 SELECT first_name FROM `employee` UNION SELECT branch_name FROM branch UNION SELECT client_name FROM client;
 SELECT first_name as Company_name FROM `employee` UNION SELECT branch_name FROM branch UNION SELECT client_name FROM client;
 
+/* JOIN */
+SELECT branch.branch_name, employee.emp_id, employee.first_name FROM `employee` JOIN branch ON employee.emp_id = branch.mgr_id; /* Include same rows from employee and branch table */
+SELECT branch.branch_name, employee.emp_id, employee.first_name FROM `employee` LEFT JOIN branch ON employee.emp_id = branch.mgr_id; /* Include all rows from employee table(Left table) */
+SELECT branch.branch_name, employee.emp_id, employee.first_name FROM `employee` RIGHT JOIN branch ON employee.emp_id = branch.mgr_id; /* Include all rows from branch table(Right table) */
+
+/* Nested Queries */
+SELECT employee.first_name, employee.last_name 
+FROM employee 
+WHERE employee.emp_id IN (
+    SELECT works_with.emp_id 
+    FROM works_with 
+    WHERE works_with.total_sales > 30000
+);
+
+SELECT client.client_name 
+FROM client 
+WHERE client.branch_id IN (
+    SELECT employee.branch_id 
+    FROM employee 
+    WHERE employee.emp_id = 102
+);
+
+/* ON DELETE */
+ALTER TABLE branch ADD CONSTRAINT fk_mgr_id FOREIGN KEY (mgr_id) REFERENCES employee(emp_id) ON DELETE SET NULL; 
+
+/* Trigger */
+/* EXAMPLE 1 */
+DELIMITER $$
+
+CREATE TRIGGER insert_trigger 
+BEFORE INSERT ON employee 
+FOR EACH ROW 
+BEGIN 
+    INSERT INTO trigger_test VALUES('Inserted new employee'); 
+END$$
+
+DELIMITER ;
+
+/* EXAMPLE 2 */
+DELIMITER $$
+
+CREATE TRIGGER insert_trigger 
+BEFORE INSERT ON employee 
+FOR EACH ROW 
+BEGIN 
+    INSERT INTO trigger_test VALUES('NEW.first_name'); 
+END$$
+
+DELIMITER ;
+
+/* EXAMPLE 3 */
+CREATE TRIGGER insert_trigger_2 
+BEFORE INSERT ON employee 
+FOR EACH ROW 
+BEGIN 
+    IF NEW.sex = 'M' THEN 
+        INSERT INTO trigger_test VALUES("Inserted male employee"); 
+    ELSEIF NEW.sex = 'F' THEN 
+        INSERT INTO trigger_test VALUES("Inserted female employee"); 
+    ELSE 
+        INSERT INTO trigger_test VALUES("Inserted other employee"); 
+    END IF; 
+END; 
+
+/* DROP TRIGGER */
+DROP TRIGGER insert_trigger; 
