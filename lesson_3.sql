@@ -130,3 +130,69 @@ SELECT c.customer_id, c.first_name, o.order_id FROM orders o RIGHT JOIN `custome
 
 /* EXERCISE */
 SELECT p.product_id, p.name, oi.quantity FROM products p LEFT JOIN order_items oi ON p.product_id = oi.product_id; 
+
+/* OUTER JOIN BETWEEN MULTIPLE TABLES */
+SELECT c.customer_id, c.first_name, o.order_id, sh.name AS shippers FROM `customers` c LEFT JOIN orders o ON c.customer_id = o.customer_id LEFT JOIN shippers sh ON o.shipper_id = sh.shipper_id ORDER BY c.customer_id;
+
+/* BEST PRACTICE: AVOID RIGHT JOIN AND USE LEFT JOIN */
+
+/* EXERCISE */
+SELECT o.order_date, o.order_id, c.first_name, sh.name AS shippers, os.name AS status FROM orders o JOIN `customers` c ON c.customer_id = o.customer_id LEFT JOIN shippers sh ON o.shipper_id = sh.shipper_id JOIN order_statuses os ON o.status = os.order_status_id ORDER BY o.order_id;
+
+/* SELF OUTER JOIN */
+SELECT e.employee_id, e.first_name, m.first_name as manager FROM `employees` e LEFT JOIN employees m ON e.reports_to = m.employee_id;
+
+/* THE USING CLAUSE (FOR SIMPLIFY JOIN STATEMENT, CAN USE IF BOTH TABLES COLUMN NAME ARE SAME) */
+SELECT o.order_id, c.first_name, sh.name AS shipper FROM orders o JOIN customers c USING (customer_id) LEFT JOIN shippers sh USING (shipper_id);
+
+/* THE USING CLAUSE WITH COMPOUND JOIN */
+SELECT * FROM `order_items` oi JOIN order_item_notes oin USING (order_id, product_id);
+
+/* EXERCISE */
+SELECT p.date, c.name AS client, p.amount, pm.name FROM `payments` p JOIN clients c USING (client_id) LEFT JOIN payment_methods pm ON p.payment_method = pm.payment_method_id;
+
+/* NATURAL JOIN (NOT RECOMMENDED = SOMETIMES PRODUCE UNEXPECTED RESULT) */
+SELECT o.order_id, c.first_name FROM orders o NATURAL JOIN customers c;
+
+/* CROSS JOIN */
+/* EXPLICIT SYNTAX */
+SELECT c.first_name AS customer, p.name AS product FROM customers c CROSS JOIN products p ORDER BY c.first_name;
+
+/* IMPLICIT SYNTAX */
+SELECT c.first_name AS customer, p.name AS product FROM customers c, products p ORDER BY c.first_name;
+
+/* EXERCISE */
+SELECT s.name, p.name AS product_name FROM shippers s CROSS JOIN products p ORDER BY s.name; -- EXPLICIT
+SELECT s.name, p.name AS product_name FROM shippers s, products p ORDER BY s.name; -- IMPLICIT
+
+/* UNIONS */
+SELECT order_id, order_date, 'Active' AS status FROM `orders` WHERE order_date >= '2019-01-01' UNION SELECT order_id, order_date, 'Archived' AS status FROM `orders` WHERE order_date < '2019-01-01';
+
+/* EXERCISE */
+SELECT customer_id, first_name, points, 'Bronze' AS type FROM `customers` WHERE points < 2000 UNION SELECT customer_id, first_name, points, 'Silver' AS type FROM `customers` WHERE points BETWEEN 2000 AND 3000 UNION SELECT customer_id, first_name, points, 'Gold' AS type FROM `customers` WHERE points > 3000 ORDER BY first_name;
+
+/* INSERT HIERARCHICAL ROWS */
+INSERT INTO orders (customer_id, order_date, status) VALUES (1, '2019-01-02', 1);
+INSERT INTO order_items VALUES (LAST_INSERT_ID(), 1,1,2.95), (LAST_INSERT_ID(), 2,1,3.95);
+
+/* CREATING COPY OF TABLE */
+CREATE TABLE orders_archived AS SELECT * FROM orders;
+INSERT INTO orders_archived SELECT * FROM orders WHERE order_date < '2019-01-01';
+
+/* EXERCISE */
+CREATE TABLE invoices_archived AS
+SELECT i.invoice_id,i.number, c.name AS client,i.invoice_total,i.payment_total,i.invoice_date, i.payment_date, i.due_date 
+FROM `invoices` i 
+JOIN clients c USING (client_id)
+WHERE payment_date IS NOT NULL;
+
+/* UPDATE */
+UPDATE invoices SET payment_total = 10, payment_date = '2019-03-01' WHERE invoice_id = 1;
+UPDATE invoices SET payment_total = invoice_total * 0.5, payment_date = due_date WHERE invoice_id = 1;
+
+/* EXERCISE */
+UPDATE customers SET points = points + 50 WHERE birth_date < '1990-01-01';
+
+/* USING SUBQUERIES IN UPDATES */
+UPDATE invoices SET payment_total = invoice_total * 0.5, payment_date = due_date WHERE client_id = (SELECT client_id FROM clients WHERE name='Myworks');
+UPDATE invoices SET payment_total = invoice_total * 0.5, payment_date = due_date WHERE client_id IN (SELECT client_id FROM clients WHERE state IN ('CA', 'NY'));
