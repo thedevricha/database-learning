@@ -1,3 +1,4 @@
+/* BASICS PRACTICES */
 /* Question 1: Get the unique job locations in the job_postings_fact table. Order in alphabetical order (ascending order) */
 SELECT DISTINCT job_location
 FROM job_postings_fact
