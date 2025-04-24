@@ -1,0 +1,4 @@
+# Ignore PostgreSQL folders
+postgresql-learning/csv_files/
+postgresql-learning/sql_load/
+.vscode/"postgresql-learning/csv_files/" 
