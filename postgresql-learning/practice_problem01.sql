@@ -1,5 +1,5 @@
 CREATE TABLE 
-    jan_2023_jobs 
+    january_jobs 
 AS
     (
         select 
@@ -10,4 +10,26 @@ AS
             EXTRACT(MONTH FROM job_posted_date) = 1
     );
 
-SELECT * FROM jan_2023_jobs LIMIT 5;
+CREATE TABLE 
+    february_jobs 
+AS
+    (
+        select 
+           *
+        from 
+            job_postings_fact
+        where 
+            EXTRACT(MONTH FROM job_posted_date) = 2
+    );
+
+CREATE TABLE 
+    march_jobs 
+AS
+    (
+        select 
+           *
+        from 
+            job_postings_fact
+        where 
+            EXTRACT(MONTH FROM job_posted_date) = 3
+    );
